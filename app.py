@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from flask_bcrypt import Bcrypt
 from models import  db, User, Opportunity, Booking, Category
+from datetime import datetime
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI']='sqlite:///servelink.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS']=False
@@ -145,7 +146,7 @@ def cancel():
     db.session.commit()
     flash('Booking cancelled successfully.')
     return redirect(url_for('volunteer_dashboard'))
-@app.route('/organization_dashboard')
+@app.route('/organization_dashboard', methods=['GET', 'POST'])
 def organization_dashboard():
     if 'user_id' not in session:
         flash('Please log in first.')
@@ -153,7 +154,25 @@ def organization_dashboard():
     if session['role'] != 'organization':
         flash('Access denied')
         return redirect(url_for('home'))
-    return 'organization dashboard - coming soon'
+    if request.method == 'GET':
+        opportunities = Opportunity.query.filter_by(organization_id=session['user_id']).all()
+        opportunity_ids = [opp.id for opp in opportunities]
+        bookings = Booking.query.filter(Booking.opportunity_id.in_(opportunity_ids)).all()
+        categories = Category.query.all()
+        return render_template('organization_dashboard.html', opportunities=opportunities, bookings=bookings, categories=categories)
+    if request.method == 'POST':
+        title = request.form.get('title')
+        description = request.form.get('description')
+        location = request.form.get('location')
+        participation_date = request.form.get('participation_date')
+        participation_date = datetime.strptime(participation_date, '%Y-%m-%d')
+        max_volunteers = request.form.get('max_volunteers')
+        category_id = request.form.get('category_id')  
+        new_opportunity = Opportunity(title=title, description=description, location=location, participation_date=participation_date, max_volunteers=max_volunteers, organization_id=session['user_id'], status='pending', category_id=category_id)
+        db.session.add(new_opportunity)
+        db.session.commit()
+        flash('Opportunity created successfully!')
+        return redirect(url_for('organization_dashboard'))
 @app.route('/admin_dashboard')
 def admin_dashboard():
     if 'user_id' not in session:
@@ -162,7 +181,7 @@ def admin_dashboard():
     if session['role'] != 'admin':
         flash('Access denied')
         return redirect(url_for('home'))
-    return 'admin dashboard - coming soon'
+    return render_template('admin_dashboard.html')
 @app.route('/logout')
 def logout():
     session.clear()
