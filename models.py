@@ -29,6 +29,7 @@ class Booking(db.Model):
     opportunity_id = db.Column(db.Integer, db.ForeignKey('opportunities.id'), nullable=False)
     cancelled = db.Column(db.Boolean, default=False)
     booking_date=db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    opportunity = db.relationship('Opportunity', backref='bookings')
 class Category(db.Model):
     __tablename__='categories'
     id = db.Column(db.Integer, primary_key=True)
