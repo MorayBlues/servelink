@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block title %}Page Title{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>Connect. Serve. Impact.</h1>
+    <p>Discover volunteering opportunities in your community.</p>
+</div>
+<div class="grid grid-3">
+    <div class="card">
+        <h3>Find Opportunities</h3>
+        <p style="color: var(--text-secondary); margin:0.5rem 0 1rem">Browse cleanups, tutoring, food drives and more.</p>
+        <a href="{{ url_for('register') }}" class="btn btn-primary">Get Started</a>
+    </div>
+    <div class="card">
+        <h3>Post Opportunities</h3>
+         <p style="color: var(--text-secondary); margin: 0.5rem 0 1rem;">Organizations can list community service opportunities.</p>
+        <a href="{{ url_for('register') }}" class="btn btn-primary">Register Org</a>
+    </div>
+    <div class="card">
+        <h3>Make an Impact</h3>
+        <p style="color: var(--text-secondary); margin: 0.5rem 0 1rem;">Every hour you give, changes someone's life.</p>
+        <a href="{{ url_for('login') }}" class="btn btn-amber">Login</a>
+    </div>
+</div>
+{% endblock %}

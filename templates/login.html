@@ -1,38 +1,26 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>login</title>
-</head>
-<body>
-    <div class="links_wrapper">
-        <div class="link"> <a href="/servelink/templates/register.html">Register</a></div>
-        <div class="link"> <a href="/servelink/templates/login.html">Login</a></div>
-        <div class="link"> <a href="/servelink/templates/index.html">Home</a></div>
+{% extends 'base.html' %}
+{% block title %} Login -ServeLink{% endblock %}
+{% block content %}
+<div style="max-width:480px; margin: 0 auto;">
+    <div class="page-header">
+        <h1>Login</h1>
+        <p>Please enter your credentials to login</p>
     </div>
-    <h1>Hi There! WELCOME</h1>
-    <div class="messages">
-        {% with messages = get_flashed_messages() %}
-        {% if messages %}
-        {% for message in messages %}
-        <p>{{ message}}</p>
-        {% endfor %}
-        {% endif %}
-        {% endwith %}
-    </div>
-    <div class="login">
-        <h2>Login</h2>
-        <p>Please enter your credentials to log in.</p>
-        <form action="/login" method="post">
-            <label for="username">Username:</label>
-            <input type="text" id="username" name="username" required>
-            <hr>
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" required>
-            <hr>
-            <button type="submit">Login</button>
+    <div class="card">
+        <form method="POST">
+            <div class="form-group">
+                <label>Username:</label>
+                <input type="text" name="username" required>
+            </div> 
+            <div class="form-group">
+                <label>Password:</label>
+                <input type="password" name="password" required>
+            </div> 
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Login</button>
         </form>
+        <p style="text-align: center; margin-top: 1rem; color: var(--text-secondary);font-size: 0.9rem;">
+            Don't have an account? <a href="{{url_for('register')}}" style="color: var(--green-mid);">Create Account</a>
+        </p>
     </div>
-</body>
-</html>
+</div>
+{% endblock %}

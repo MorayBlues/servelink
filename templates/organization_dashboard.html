@@ -41,6 +41,7 @@
     </div>
     <div class="opportunities">
         <h2>Your Opportunities</h2>
+    {% if opportunities %}    
         {% for opportunity in opportunities %}
                 <h3>{{ opportunity.title }}</h3>
                 <p>{{opportunity.description}}</p>
@@ -48,14 +49,21 @@
                 <p>{{opportunity.participation_date}}</p>
                 <p>Status: {{opportunity.status}}</p>
         {% endfor %}
+    {% else %} 
+       <p>You haven't posted any opportunities yet.</p>
+    {% endif %}   
     </div>
     <div class="bookings">
         <h2>Bookings for Your Opportunities</h2>
+    {% if bookings %}    
         {% for booking in bookings %}
                 <p>Opportunity: {{ booking.opportunity.title }}</p>
                 <p>Volunteer: {{ booking.volunteer.name }}</p>
                 <p>Status: {{'Cancelled' if booking.cancelled else 'Active'}}</p>
         {% endfor %}
+    {% else %}
+       <p>No available booking yet.</p>
+    {% endif %}       
     </div>    
 </body>
 </html>

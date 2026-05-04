@@ -19,6 +19,7 @@
     </div>
     <div class="pending-orgs">
         <h2>Pending Organizations</h2>
+    {% if organizations %}    
         {% for org in organizations %}
             <div class="org">
                 <p>Name: {{ org.name }}</p>
@@ -31,9 +32,13 @@
                <button type="submit">Reject</button>
             </form>
         {% endfor %}
+    {% else %}
+      <p>No pending organizations.</p>
+    {% endif %}      
     </div>
     <div class="pending-opportunities">
         <h2>Pending Opportunities</h2>
+    {% if opportunities %}    
         {% for opp in opportunities %}
             <div class="opportunity">
                 <p>Title: {{ opp.title }}</p>
@@ -46,6 +51,9 @@
                <button type="submit">Reject</button>
             </form>
         {% endfor %}
+    {% else %}
+      <p>You have no pending opportunities.</p>
+    {% endif %}      
     </div>
 </body>
 </html>

@@ -1,79 +1,89 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Volunteer</title>
-</head>
-<body>
-    <h1>Welcome, Volunteer!</h1>
-    <p>What would you like to volunteer for?</p>
-    <div class="messages">
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-        {% for message in messages %}
-        <p>{{ message}}</p>
-        {% endfor %}
-        {% endif %}
-        {% endwith %}
+{% extends 'base.html' %}
+{% block title %}Volunteer — ServeLink{% endblock %}
+{% block content %}
+    <div class="page-header">
+        <h1>Find Opoortunities</h1>
+        <p>Browse and book community service opportunities</p>
     </div>
-    <div class="filter-form">
-    <form action="{{ url_for('volunteer_dashboard') }}" method="GET">
-        <label for="category_id">Category:</label>
-        <select name="category_id" id="category_id">
-            <option value="">All</option>
-            {% for category in categories %}
-                <option value="{{ category.id }}">{{ category.name }}</option>
-            {% endfor %}
-        </select>
-        <label for="location">Location:</label>
-        <select name="location" id="location">
-            <option value="">All</option>
-            {% for location in locations %}
-                <option value="{{ location }}">{{ location }}</option>
-            {% endfor %}
-        </select>
-        <label for="date">Date:</label>
-        <select name="date" id="date">
-            <option value="">All</option>
-            {% for date in dates %}
-                <option value="{{ date }}">{{ date }}</option>
-            {% endfor %}
-        </select>
-        <button type="submit">Filter</button>
-    </form>
+    <div class="card" style="margin-bottom: 2rem;">
+        <form method="GET" action="{{url_for('volunteer_dashboard')}}">
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+            <div class="form-group" style="flex: 1; min-width: 150px;">
+                <label>Category:</label>
+                <select name="category_id">
+                    <option value="">All</option>
+                    {% for category_id in categories %}
+                    <option value="{{ category.id }}">{{ category.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+             <div class="form-group" style="flex: 1; min-width: 150px;">
+                <label>Location:</label>
+                <select name="location">
+                    <option value="">All</option>
+                    {% for location in locations %}
+                    <option value="{{ location }}">{{ location}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group" style="flex: 1; min-width: 150px;">
+                <label>Date:</label>
+                <select name="Date">
+                    <option value="">All</option>
+                    {% for date in dates %}
+                    <option value="{{ date }}">{{ date}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div style="display: flex; align-items: flex-end; padding-bottom: 1.2rem;">
+            <button type="submit" class="btn btn-primary" style="width:100%">Filter</button>
+              </div>
+            </div>
+        </form>
     </div>
-    <div class="opportunities">
-        {% for opportunity in opportunities %}
-                <h3>{{ opportunity.title }}</h3>
-                <p>{{opportunity.description}}</p>
-                <p>{{opportunity.location}}</p>
-                <p>{{opportunity.participation_date}}</p>
-                <p>{{slots_remaining[opportunity.id]}} slots remaining</p>
-        <div class="book-opportunity">
-            <form action="/book" method="post">
-               <input type="hidden" name="opportunity_id" value="{{opportunity.id}}">
-               <button type="submit">Book Opportunity</button>
-            </form>
-        </div>
-        {% endfor %}
-    </div>
+</div>
     
-    <div class="mybookings">
-        <h2>My Bookings</h2>
-        {% for bookings in my_bookings  %}
-            <h3>{{ bookings.opportunity.title }}</h3>
-            <p>{{bookings.opportunity.description}}</p>
-            <p>{{bookings.opportunity.location}}</p>
-            <p>{{bookings.opportunity.participation_date}}</p>
-        </div>
-        <div class="cancel-opportunity">
-            <form action="/cancel" method="post">
-                <input type="hidden" name="booking_id" value="{{bookings.id}}">
-                <button type="submit">Cancel Booking</button>
+ <h2 style="margin-bottom: 1rem;">Available Opportunities</h2> 
+ <div class="grid grid-2">
+    {% if opportunities %}    
+        {% for opportunity in opportunities %}
+        <div class="card">
+            <h3>{{ opportunity.title }}</h3>
+            <p style="color: var(--text-secondary); margin: 0.5rem 0;">{{opportunity.description}}</p>
+            <p>{{opportunity.location}}</p>
+            <p>{{opportunity.participation_date}}</p>
+            <span class="badge badge-open">{{ slots_remaining[opportunity.id]}} slots left</span>
+            <form action="/book" method="post" style="margin-top: 1rem;">
+                <div class="form-group">
+               <input type="hidden" name="opportunity_id" value="{{opportunity.id}}">
+               <button type="submit" class="btn btn-primary" style="width:100%">Book Opportunity</button>
             </form>
         </div>
-        {% endfor %}
-    </div>
-</body>
-</html>
+        {% endfor %} 
+    {% else %}
+        <div class="empty-state">
+        <p>No opportunities available right now. Check back later</p>
+        </div>
+    {% endif %}
+</div>
+    <h2 style="margin: 2rem 0 1rem;">My Bookings</h2>
+    <div class="grid grid-2">
+    {% if bookings %}
+        {% for bookings in my_bookings  %}
+        <div class="card">
+            <h3>{{ bookings.opportunity.title }}</h3>
+            <p style="color: var(--text-secondary);">{{bookings.opportunity.description}}</p>
+            <p>{{bookings.opportunity.participation_date}}</p>
+            <form action="/cancel" method="post" style="margin-top: 1rem;">
+                <input type="hidden" name="booking_id" value="{{bookings.id}}">
+                <button type="submit" class="btn btn-danger" style="width:100%">Cancel Booking</button>
+            </form>
+        </div>
+        {% endfor %}   
+    {% else %}
+        <div class="empty-state">
+           <p>You currently have no active bookings.</p> 
+        </div>    
+    {% endif %}  
+</div>    
+{% endblock %}
