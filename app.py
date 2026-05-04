@@ -181,7 +181,52 @@ def admin_dashboard():
     if session['role'] != 'admin':
         flash('Access denied')
         return redirect(url_for('home'))
-    return render_template('admin_dashboard.html')
+    opportunities = Opportunity.query.filter_by(status='pending').all()
+    organizations = User.query.filter_by(role='organization', approvals=False).all()
+    return render_template('admin_dashboard.html', opportunities=opportunities, organizations=organizations)
+@app.route('/approve_organization/<int:org_id>', methods=['POST'])
+def approve_organization(org_id):
+    organization = User.query.get(org_id)
+    if not organization or organization.role != 'organization':
+        flash('Organization not found.')
+        return redirect(url_for('admin_dashboard'))
+    organization.approvals = True
+    db.session.commit()
+    flash(f'Organization {organization.name} approved successfully!')
+    return redirect(url_for('admin_dashboard'))
+@app.route('/reject_organization/<int:org_id>', methods=['POST'])
+def reject_organization(org_id):
+    organization = User.query.get(org_id)
+    if not organization or organization.role != 'organization':
+        flash('Organization not found.')
+        return redirect(url_for('admin_dashboard'))
+    organization.approvals = False
+    opportunities = Opportunity.query.filter_by(organization_id=org_id).all()
+    for opp in opportunities:
+        opp.status = 'rejected'
+    db.session.commit()
+    flash(f'Organization {organization.name} rejected and deleted successfully!')
+    return redirect(url_for('admin_dashboard'))
+@app.route('/approve_opportunity/<int:opp_id>', methods=['POST'])
+def approve_opportunity(opp_id):
+    opportunity = Opportunity.query.get(opp_id)
+    if not opportunity or opportunity.status != 'pending':
+        flash('Opportunity not found.')
+        return redirect(url_for('admin_dashboard'))
+    opportunity.status = 'open'
+    db.session.commit()
+    flash(f'Opportunity {opportunity.title} approved successfully!')
+    return redirect(url_for('admin_dashboard'))
+@app.route('/reject_opportunity/<int:opp_id>', methods=['POST'])
+def reject_opportunity(opp_id):
+    opportunity = Opportunity.query.get(opp_id)
+    if not opportunity:
+        flash('Opportunity not found.')
+        return redirect(url_for('admin_dashboard'))
+    opportunity.status = 'rejected'
+    db.session.commit()
+    flash(f'Opportunity {opportunity.title} rejected successfully!')
+    return redirect(url_for('admin_dashboard'))    
 @app.route('/logout')
 def logout():
     session.clear()

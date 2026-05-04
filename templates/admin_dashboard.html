@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin</title>
+</head>
+<body>
+    <h1>Welcome, Admin!</h1>
+    <p>Manage opportunities and organizations.</p>
+    <div class="messages">
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        {% for message in messages %}
+        <p>{{ message}}</p>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+    </div>
+    <div class="pending-orgs">
+        <h2>Pending Organizations</h2>
+        {% for org in organizations %}
+            <div class="org">
+                <p>Name: {{ org.name }}</p>
+                <p>Email: {{ org.email }}</p>
+            </div>
+            <form action="/approve_organization/{{ org.id }}" method="POST">
+               <button type="submit">Approve</button>
+            </form>
+            <form action="/reject_organization/{{ org.id }}" method="POST">
+               <button type="submit">Reject</button>
+            </form>
+        {% endfor %}
+    </div>
+    <div class="pending-opportunities">
+        <h2>Pending Opportunities</h2>
+        {% for opp in opportunities %}
+            <div class="opportunity">
+                <p>Title: {{ opp.title }}</p>
+                <p>Description: {{ opp.description }}</p>
+            </div>
+            <form action="/approve_opportunity/{{ opp.id }}" method="POST">
+               <button type="submit">Approve</button>
+            </form>
+            <form action="/reject_opportunity/{{ opp.id }}" method="POST">
+               <button type="submit">Reject</button>
+            </form>
+        {% endfor %}
+    </div>
+</body>
+</html>

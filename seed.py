@@ -1,11 +1,17 @@
-from app import app, db
 from models import User
+from flask_bcrypt import Bcrypt
+from app import app, db
+bcrypt = Bcrypt(app)
 
 with app.app_context():
-    user = User.query.filter_by(username='winyou').first()
-    if user:
-        user.approvals = True
-        db.session.commit()
-        print('Organization approved')
-    else:
-        print('User not found')
+    admin = User(
+        name='Admin',
+        email='admin@servelink.com',
+        username='admin',
+        password=bcrypt.generate_password_hash('admin123').decode('utf-8'),
+        role='admin',
+        approvals=True
+    )
+    db.session.add(admin)
+    db.session.commit()
+    print('Admin created')
