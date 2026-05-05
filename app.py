@@ -1,11 +1,22 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from flask_bcrypt import Bcrypt
+from flask_mail import Mail, Message
+from dotenv import load_dotenv
+import os
+load_dotenv()
 from models import  db, User, Opportunity, Booking, Category
 from datetime import datetime
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI']='sqlite:///servelink.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS']=False
-app.config['SECRET_KEY']='dev-secret-key'
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
+app.config['MAIL_SERVER']= 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
+app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
+app.config['MAIL_DEFAULT_SENDER'] = os.environ.get('MAIL_USERNAME')
+mail = Mail(app)
 bcrypt = Bcrypt(app)
 db.init_app(app)
 @app.route('/')
@@ -27,6 +38,12 @@ def register():
         if User.query.filter_by(username=username).first():
              flash('Username already taken')
              return redirect(url_for('register'))
+        if len(password) <8:
+            flash('Password must be at least 8 characters')
+            return redirect(url_for('register'))
+        if not any(char.isdigit() for char in password):
+            flash('password must contain at least one number.')
+            return redirect(url_for('register'))
         password = bcrypt.generate_password_hash(password).decode('utf-8')
         new_user = User(name=name, email=email, username=username, password=password, role=role)
         db.session.add(new_user)
