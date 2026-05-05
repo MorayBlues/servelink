@@ -121,7 +121,9 @@ def book():
         flash('Access denied')
         return redirect(url_for('home'))
     opportunity_id = request.form.get('opportunity_id')
-    opportunity = Opportunity.query.with_for_update().get(opportunity_id)
+    opportunity = db.session.execute(
+        db.select(Opportunity).where(Opportunity.id == opportunity_id).with_for_update()
+    ).scalar_one_or_none()
     if not opportunity or opportunity.status != 'open':
         flash('Opportunity not available for booking.')
         return redirect(url_for('volunteer_dashboard'))
@@ -142,8 +144,8 @@ def book():
         new_booking = Booking(user_id=session['user_id'], opportunity_id=opportunity_id)
         db.session.add(new_booking)
         db.session.commit()
-        org = User.query.get(opportunity.organization_id)
-        volunteer = User.query.get(session['user_id'])
+        org = db.session.get(User, opportunity.organization_id)
+        volunteer = db.session.get(User,session['user_id'])
         if org and org.email:
             send_email(
                 org.email,
