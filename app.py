@@ -99,20 +99,12 @@ def volunteer_dashboard():
     if category_id:
         query = query.filter_by(category_id=category_id)
         flash(f'Filtering by category: {category_id}')
-    elif 'category_id' in request.args:
-        flash('No category filter applied')
     participation_date=request.args.get('participation_date')
     if participation_date:
         query = query.filter(Opportunity.participation_date >= participation_date)
-        flash(f'Filtering by participation date: {participation_date}')
-    elif 'participation_date' in request.args:
-        flash('No participation date filter applied')     
     location=request.args.get('location')
     if location:
         query = query.filter_by(location=location)
-        flash(f'Filtering by location: {location}')
-    elif 'location' in request.args:
-        flash('No location filter applied')
     my_bookings = Booking.query.filter_by(user_id=session['user_id'], cancelled=False).all()    
     opportunities = query.all()
     slots_remaining={}
