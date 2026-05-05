@@ -138,6 +138,14 @@ def book():
     elif existing_booking and existing_booking.cancelled:
        existing_booking.cancelled = False
        db.session.commit()
+       org = db.session.get(User, opportunity.organization_id)
+       volunteer = db.session.get(User, session['user_id'])
+       if org and org.email:
+           send_email(
+               org.email,
+               f'Booking reativated:{opportunity.title}',
+               f'{volunteer.name} has reactivated their booking for {opportunity.title} on {opportunity.participation_date.strftime("%B %d, %Y")}.'
+           )
        flash('Booking reactivated successfully!')
        return redirect(url_for('volunteer_dashboard'))
     else:
