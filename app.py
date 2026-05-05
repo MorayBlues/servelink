@@ -163,7 +163,7 @@ def cancel():
         flash('Access denied')
         return redirect(url_for('home'))
     booking_id = request.form.get('booking_id')
-    booking = Booking.query.get(booking_id)
+    booking = db.session.get(Booking,booking_id)
     if not booking or booking.user_id != session['user_id']:
         flash('Booking not found.')
         return redirect(url_for('volunteer_dashboard'))
@@ -211,7 +211,7 @@ def admin_dashboard():
     return render_template('admin_dashboard.html', opportunities=opportunities, organizations=organizations)
 @app.route('/approve_organization/<int:org_id>', methods=['POST'])
 def approve_organization(org_id):
-    organization = User.query.get(org_id)
+    organization = db.session.get(User, org_id)
     if not organization or organization.role != 'organization':
         flash('Organization not found.')
         return redirect(url_for('admin_dashboard'))
@@ -221,7 +221,7 @@ def approve_organization(org_id):
     return redirect(url_for('admin_dashboard'))
 @app.route('/reject_organization/<int:org_id>', methods=['POST'])
 def reject_organization(org_id):
-    organization = User.query.get(org_id)
+    organization = db.session.get(User,org_id)
     if not organization or organization.role != 'organization':
         flash('Organization not found.')
         return redirect(url_for('admin_dashboard'))
@@ -234,7 +234,7 @@ def reject_organization(org_id):
     return redirect(url_for('admin_dashboard'))
 @app.route('/approve_opportunity/<int:opp_id>', methods=['POST'])
 def approve_opportunity(opp_id):
-    opportunity = Opportunity.query.get(opp_id)
+    opportunity = db.session.get(Opportunity,opp_id)
     if not opportunity or opportunity.status != 'pending':
         flash('Opportunity not found.')
         return redirect(url_for('admin_dashboard'))
@@ -252,7 +252,7 @@ def approve_opportunity(opp_id):
     return redirect(url_for('admin_dashboard'))
 @app.route('/reject_opportunity/<int:opp_id>', methods=['POST'])
 def reject_opportunity(opp_id):
-    opportunity = Opportunity.query.get(opp_id)
+    opportunity = db.session.get(Opportunity,opp_id)
     if not opportunity:
         flash('Opportunity not found.')
         return redirect(url_for('admin_dashboard'))
