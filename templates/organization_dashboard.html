@@ -1,69 +1,82 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
-</head>
-<body>
-    <h1>Welcome to Your Dashboard</h1>
-    <p>From here you can manage your opportunities and view bookings.</p>
-    <div class="messages">
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-        {% for message in messages %}
-        <p>{{ message}}</p>
-        {% endfor %}
-        {% endif %}
-        {% endwith %}
-    </div>
-    <div class="create-form">
-        <h2>Create New Opportunity</h2>
+{% extends 'base.html' %}
+{% block title %}Dashboard -ServeLink{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>Post Opportunities</h1>
+    <p>Post opportunities, See a list of your opportunities and bookings</p>
+</div>
+<div class="card" style="margin-top: 2rem;">
         <form action="{{ url_for('organization_dashboard') }}" method="POST">
-            <label for="title">Title:</label>
-            <input type="text" name="title" id="title" required><br>
-            <label for="description">Description:</label>
-            <textarea name="description" id="description" required></textarea><br>
-            <label for="location">Location:</label>
-            <input type="text" name="location" id="location" required><br>
-            <label for="participation_date">Participation Date:</label>
-            <input type="date" name="participation_date" id="participation_date" required><br>
-            <label for="max_volunteers">Max Volunteers:</label>
-            <input type="number" name="max_volunteers" id="max_volunteers" required><br>
-            <label for="category_id">Category:</label>
-            <select name="category_id" id="category_id">
-                {% for category in categories %}
-                    <option value="{{ category.id }}">{{ category.name }}</option>
-                {% endfor %}
-            </select>
-            <button type="submit">Create Opportunity</button><br>
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                <div class="form-group" style="flex: 1; min-width: 150px;">
+                    <label>Title:</label>
+                    <input type="text" name="title" id="title" required>
+                </div>
+                <div class="form-group" style="flex: 1; min-width: 150px;">   
+                    <label>Description:</label>
+                    <textarea name="description" id="description" required></textarea>
+                </div>
+                <div class="form-group" style="flex: 1; min-width: 150px;">
+                    <label>Location:</label>
+                    <input type="text" name="location" id="location" required>
+                </div>    
+                <div class="form-group" style="flex: 1; min-width: 150px;">
+                    <label>Participation Date:</label>
+                    <input type="date" name="participation_date" id="participation_date" required>
+                </div>    
+                <div class="form-group" style="flex: 1; min-width: 150px;">
+                    <label>Max Volunteers:</label>
+                    <input type="number" name="max_volunteers" id="max_voluntees" required>
+                </div>    
+                <div class="form-group" style="flex: 1; min-width: 150px;">
+                    <label>Category:</label>
+                    <select name="category_id">
+                         {% for category in categories %}
+                         <option value="{{ category.id }}">{{ category.name }}</option>
+                         {% endfor %}
+                    </select>
+                </div>    
+                <div style="display: flex; align-items: flex-end; padding-bottom: 1.2rem;">
+                <button type="submit" class="btn btn-primary">Create Opportunity</button>
+                </div>
+            </div>    
         </form>
     </div>
-    <div class="opportunities">
-        <h2>Your Opportunities</h2>
+
+<h2 style="margin-bottom: 1rem;">Posted Opportunities</h2>
+<div class="grid grid-2">
     {% if opportunities %}    
         {% for opportunity in opportunities %}
+        <div class="card">
                 <h3>{{ opportunity.title }}</h3>
-                <p>{{opportunity.description}}</p>
+                <p style="color: var(--text-secondary); margin: 0.5rem 0;">{{opportunity.description}}</p>
                 <p>{{opportunity.location}}</p>
-                <p>{{opportunity.participation_date}}</p>
-                <p>Status: {{opportunity.status}}</p>
+                <p>{{opportunity.participation_date.strftime('%B %d, %Y')}}</p>
+                <span class="badge {% if opportunity.status == 'open' %}badge-open{% elif opportunity.status == 'pending' %}badge-pending{% else %}badge-cancelled{% endif %}">
+                    {{ opportunity.status }}
+                </span>
+        </div>        
         {% endfor %}
     {% else %} 
-       <p>You haven't posted any opportunities yet.</p>
+        <div class="empty-state">
+            <p>You haven't posted any opportunities yet.</p>
+        </div>    
     {% endif %}   
-    </div>
-    <div class="bookings">
-        <h2>Bookings for Your Opportunities</h2>
+</div>
+<h2 style="margin: 2rem 0 1rem;">Bookings for Your Opportunities</h2>
+<div class="grid grid-2">
     {% if bookings %}    
         {% for booking in bookings %}
-                <p>Opportunity: {{ booking.opportunity.title }}</p>
-                <p>Volunteer: {{ booking.volunteer.name }}</p>
-                <p>Status: {{'Cancelled' if booking.cancelled else 'Active'}}</p>
+        <div class="card">
+            <h3>{{ booking.opportunity.title }}</h3>
+                <p style="color: var(--text-secondary);">{{ booking.volunteer.name }}</p>
+                <span class="badge badge-pending">Status: {{'Cancelled' if booking.cancelled else 'Active'}}</span>
+        </div>    
         {% endfor %}
     {% else %}
-       <p>No available booking yet.</p>
+        <div class="empty-state">
+          <p>No available booking yet.</p>
+        </div>   
     {% endif %}       
-    </div>    
-</body>
-</html>
+</div>    
+{% endblock%}

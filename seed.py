@@ -1,4 +1,4 @@
-from models import User
+from models import User, Category
 from flask_bcrypt import Bcrypt
 from app import app, db
 bcrypt = Bcrypt(app)
@@ -12,6 +12,11 @@ with app.app_context():
         role='admin',
         approvals=True
     )
-    db.session.add(admin)
-    db.session.commit()
-    print('Admin created')
+with app.app_context():
+    categories=['Education', 'Food & Hunger', 'Health','Community']
+    for name in categories:
+        cat = Category(name=name)
+        db.session.add(cat)
+    db.session.commit() 
+    print('admin created')
+    print('Categories added')       

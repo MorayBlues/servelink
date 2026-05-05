@@ -12,7 +12,7 @@
                 <label>Category:</label>
                 <select name="category_id">
                     <option value="">All</option>
-                    {% for category_id in categories %}
+                    {% for category in categories %}
                     <option value="{{ category.id }}">{{ category.name }}</option>
                     {% endfor %}
                 </select>
@@ -68,14 +68,14 @@
 </div>
     <h2 style="margin: 2rem 0 1rem;">My Bookings</h2>
     <div class="grid grid-2">
-    {% if bookings %}
-        {% for bookings in my_bookings  %}
+    {% if my_bookings %}
+        {% for booking in my_bookings  %}
         <div class="card">
-            <h3>{{ bookings.opportunity.title }}</h3>
-            <p style="color: var(--text-secondary);">{{bookings.opportunity.description}}</p>
-            <p>{{bookings.opportunity.participation_date}}</p>
+            <h3>{{ booking.opportunity.title }}</h3>
+            <p style="color: var(--text-secondary);">{{booking.opportunity.description}}</p>
+            <p>{{booking.opportunity.participation_date.strftime('%B %d, %Y')}}</p>
             <form action="/cancel" method="post" style="margin-top: 1rem;">
-                <input type="hidden" name="booking_id" value="{{bookings.id}}">
+                <input type="hidden" name="booking_id" value="{{booking.id}}">
                 <button type="submit" class="btn btn-danger" style="width:100%">Cancel Booking</button>
             </form>
         </div>

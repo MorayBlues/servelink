@@ -1,59 +1,50 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin</title>
-</head>
-<body>
-    <h1>Welcome, Admin!</h1>
-    <p>Manage opportunities and organizations.</p>
-    <div class="messages">
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-        {% for message in messages %}
-        <p>{{ message}}</p>
-        {% endfor %}
-        {% endif %}
-        {% endwith %}
-    </div>
-    <div class="pending-orgs">
-        <h2>Pending Organizations</h2>
+{% extends 'base.html' %}
+{% block title %}Dashboard - ServeLink{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>Manage your Platform</h1>
+    <p>Approve or disapprove pending organizations and opportunities</p>
+</div>
+<h2 style="margin-bottom: 1rem;">Pending Organizations</h2>
+<div class="grid grid-2">
     {% if organizations %}    
         {% for org in organizations %}
-            <div class="org">
-                <p>Name: {{ org.name }}</p>
-                <p>Email: {{ org.email }}</p>
-            </div>
+            <div class="card">
+                <h3>{{ org.name }}</h3>
+                <p style="color: var(--text-secondary); margin: 0.5rem 0;">{{ org.email }}</p>
             <form action="/approve_organization/{{ org.id }}" method="POST">
-               <button type="submit">Approve</button>
+               <button type="submit" class="btn btn-amber" style="width: 100%;">Approve org</button>
             </form>
             <form action="/reject_organization/{{ org.id }}" method="POST">
-               <button type="submit">Reject</button>
-            </form>
+               <button type="submit" class="btn btn-danger" style="width: 100%;">Reject org</button>
+            </form> 
+            </div>
         {% endfor %}
     {% else %}
-      <p>No pending organizations.</p>
+        <div class="empty-state">
+          <p>No pending organizations.</p>
+        </div>  
     {% endif %}      
-    </div>
-    <div class="pending-opportunities">
-        <h2>Pending Opportunities</h2>
+</div>
+<h2 style="margin-bottom: 1rem;">Pending Opportunities</h2>
+<div class="grid grid-2">
     {% if opportunities %}    
         {% for opp in opportunities %}
-            <div class="opportunity">
-                <p>Title: {{ opp.title }}</p>
-                <p>Description: {{ opp.description }}</p>
-            </div>
+            <div class="card">
+                <h3>{{ opp.title }}</h3>
+                <p style="color: var(--text-secondary); margin: 0.5rem 0;">{{ opp.description }}</p>
             <form action="/approve_opportunity/{{ opp.id }}" method="POST">
-               <button type="submit">Approve</button>
+               <button type="submit" class="btn btn-amber" style="width: 100%;">Approve Opp</button>
             </form>
             <form action="/reject_opportunity/{{ opp.id }}" method="POST">
-               <button type="submit">Reject</button>
+               <button type="submit" class="btn btn-danger" style="width: 100%;">Reject Opp</button>
             </form>
+            </div>
         {% endfor %}
     {% else %}
-      <p>You have no pending opportunities.</p>
+        <div class="empty-state">
+           <p>You have no pending opportunities.</p>
+        </div>   
     {% endif %}      
-    </div>
-</body>
-</html>
+</div>
+{% endblock %}
