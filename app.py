@@ -19,6 +19,12 @@ app.config['MAIL_DEFAULT_SENDER'] = os.environ.get('MAIL_USERNAME')
 mail = Mail(app)
 bcrypt = Bcrypt(app)
 db.init_app(app)
+def send_email(to, subject, body):
+    try:
+        msg = Message(subject, recipients=[to], body=body)
+        mail.send(msg)
+    except Exception as e:
+        print(f'Email failed:{e}')    
 @app.route('/')
 def home():
         return render_template('home.html')
@@ -115,7 +121,7 @@ def volunteer_dashboard():
         slots_remaining[opp.id]=opp.max_volunteers-booked    
     return render_template('volunteer_dashboard.html', opportunities=opportunities, slots_remaining=slots_remaining, locations=locations, dates=dates, categories=categories, my_bookings=my_bookings)
 @app.route('/book', methods=['POST'])
-def book():
+def book():   
     if 'user_id' not in session:
         flash('Please log in first.')
         return redirect(url_for('login'))
@@ -144,6 +150,14 @@ def book():
         new_booking = Booking(user_id=session['user_id'], opportunity_id=opportunity_id)
         db.session.add(new_booking)
         db.session.commit()
+        org = User.query.get(opportunity.organization_id)
+        volunteer = User.query.get(session['user_id'])
+        if org and org.email:
+            send_email(
+                org.email,
+                f'New booking:{opportunity.title}',
+                f'{volunteer.name}has booked a slot for {opportunity.title} on {opportunity.participation_date.strftime("%B %d, %Y")}.'
+            )
         flash('Booking successful!')
         return redirect(url_for('volunteer_dashboard'))
 @app.route('/cancel', methods=['POST'])
@@ -232,6 +246,14 @@ def approve_opportunity(opp_id):
         return redirect(url_for('admin_dashboard'))
     opportunity.status = 'open'
     db.session.commit()
+    volunteers= User.query.filter_by(role='volunteer').all()
+    for volunteer in volunteers:
+        if volunteer.email:
+            send_email(
+                volunteer.email,
+                f'New opportunity:{opportunity.title}',
+                f'A new volunteering opportunity is available:{opportunity.title} in {opportunity.location} on {opportunity.participation_date.strftime("%B %d, %Y")}. Login to ServeLink to book your slot'
+            )
     flash(f'Opportunity {opportunity.title} approved successfully!')
     return redirect(url_for('admin_dashboard'))
 @app.route('/reject_opportunity/<int:opp_id>', methods=['POST'])

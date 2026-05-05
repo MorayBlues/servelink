@@ -51,7 +51,7 @@
             <h3>{{ opportunity.title }}</h3>
             <p style="color: var(--text-secondary); margin: 0.5rem 0;">{{opportunity.description}}</p>
             <p>{{opportunity.location}}</p>
-            <p>{{opportunity.participation_date}}</p>
+            <p>{{opportunity.participation_date.strftime("%B %d, %Y")}}</p>
             <span class="badge badge-open">{{ slots_remaining[opportunity.id]}} slots left</span>
             <form action="/book" method="post" style="margin-top: 1rem;">
                 <div class="form-group">
