@@ -22,6 +22,13 @@ with app.app_context():
         role='admin',
         approvals=True
     )
+    Shanty = User(
+        name='Shantel Mwangi',
+        email='shantelmwangi@gmail.com',
+        username='ShantyM',
+        password=bcrypt.generate_password_hash('Shantel23').decode('utf-8'),
+        role='volunteer'
+    )
     org1= User(
         name='Ngong Hills Volunteers',
         email='info@ngonghillsvolunteers.org',
@@ -72,9 +79,11 @@ with app.app_context():
         phone='0756789012'
     )
     db.session.add(admin)
+    db.session.add(Shanty)
     db.session.add_all([org1, org2, org3, org4, org5])
     db.session.commit()
     print('admin created') 
+    print('Shanty added')
     print('organizations added')
 
     opp1= Opportunity(
