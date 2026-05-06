@@ -3,6 +3,11 @@
 ServeLink connects volunteers with community service opportunities 
 posted by local organizations. Admins manage approvals and platform integrity.
 
+## Live Demo 
+https://servelink-qdwr.onrender.com
+
+Note:First load may take 50 seconds(free tier spin-down)
+
 ## Tech Stack
 - Python 3.13 + Flask
 - SQLAlchemy + SQLite
