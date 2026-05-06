@@ -27,7 +27,9 @@ def send_email(to, subject, body):
         msg = Message(subject, recipients=[to], body=body)
         mail.send(msg)
     except Exception as e:
-        print(f'Email failed:{e}')    
+        print(f'Email failed:{e}') 
+    except SystemExit:
+        pass       
 @app.route('/')
 def home():
         return render_template('home.html')
