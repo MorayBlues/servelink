@@ -98,7 +98,6 @@ def volunteer_dashboard():
     category_id=request.args.get('category_id')
     if category_id:
         query = query.filter_by(category_id=category_id)
-        flash(f'Filtering by category: {category_id}')
     participation_date=request.args.get('participation_date')
     if participation_date:
         query = query.filter(Opportunity.participation_date >= participation_date)
@@ -267,7 +266,10 @@ def reject_opportunity(opp_id):
     opportunity.status = 'rejected'
     db.session.commit()
     flash(f'Opportunity {opportunity.title} rejected successfully!')
-    return redirect(url_for('admin_dashboard'))    
+    return redirect(url_for('admin_dashboard')) 
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'),404   
 @app.route('/logout')
 def logout():
     session.clear()
