@@ -21,6 +21,9 @@ bcrypt = Bcrypt(app)
 db.init_app(app)
 def send_email(to, subject, body):
     try:
+        if not app.config.get('MAIL_USERNAME'):
+            print('Mail not configured, skipping')
+            return
         msg = Message(subject, recipients=[to], body=body)
         mail.send(msg)
     except Exception as e:
